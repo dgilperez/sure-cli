@@ -42,10 +42,25 @@ sure-cli config set api_url http://localhost:3000
 sure-cli config set token <access_token>
 
 # Accounts
-sure-cli accounts list
+sure-cli accounts list --format=table
+sure-cli accounts list --format=json
+sure-cli accounts show <account_id>
 
 # Transactions
-sure-cli transactions list --from 2026-01-01 --to 2026-02-01 --limit 50
+sure-cli transactions list --from 2026-01-01 --to 2026-02-01 --per-page 50 --format=table
+sure-cli transactions show <transaction_id>
+
+# Safe writes (default is --dry-run)
+sure-cli transactions create --amount "-12.34" --date 2026-02-04 --name "Coffee" --account-id <id>
+sure-cli transactions create --amount "-12.34" --date 2026-02-04 --name "Coffee" --account-id <id> --apply
+
+sure-cli transactions update <tx_id> --name "Coffee (fixed)" --dry-run
+sure-cli transactions delete <tx_id> --apply
+
+# Phase 4 (read-only heuristics)
+sure-cli insights subscriptions --days 120
+sure-cli insights fees --days 120
+sure-cli insights leaks --days 120
 
 # Sync
 sure-cli sync
@@ -71,15 +86,12 @@ Sure supports OAuth bearer tokens and API keys.
 - **`GET /api/v1/accounts/:id` returns 404** upstream (route exists, but controller/view missing). `sure-cli accounts show` currently falls back to list lookup.
 - **Transaction sign mismatch**: UI shows income `+2.00€` and expense `-1.00€`, but API payload returned inverted signs (income as `-€2.00`, expense as `€1.00`). Needs investigation in Sure serializer/formatting.
 
-### CLI features
-- Implement `--format=table` (human-friendly) while keeping JSON default for agents.
-- Add `transactions create/update/delete` with safe pattern: `--dry-run` / `--apply`.
+### CLI features (next)
 - Add `login` (OAuth) and token refresh flow (device info required by Sure auth).
-- Add pagination flags (`--page`, `--per-page`) for list commands.
-- Define and version JSON schemas for agent-first outputs (`docs/schemas/*`).
+- Hardening/refactor: move more pagination/window logic into `internal/api` (typed models, better errors).
 
 ### Intelligent commands (Phase 4)
-- `insights subscriptions/fees/leaks` (client-side heuristics first)
+- Improve `insights subscriptions/fees/leaks` output richness (confidence, reasons, suggested actions).
 - `plan budget/forecast/runway`
 - `propose rules` + `apply rules --apply`
 
