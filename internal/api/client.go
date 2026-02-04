@@ -18,7 +18,17 @@ func New() *Client {
 	c := resty.New().
 		SetBaseURL(strings.TrimRight(config.APIURL(), "/")).
 		SetTimeout(30*time.Second).
-		SetHeader("Accept", "application/json")
+		SetHeader("Accept", "application/json").
+		SetRetryCount(2).
+		SetRetryWaitTime(1 * time.Second).
+		SetRetryMaxWaitTime(5 * time.Second).
+		AddRetryCondition(func(r *resty.Response, err error) bool {
+			// Retry on network errors or 5xx
+			if err != nil {
+				return true
+			}
+			return r.StatusCode() >= 500
+		})
 
 	// Auth
 	switch config.AuthMode() {
