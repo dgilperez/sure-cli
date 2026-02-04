@@ -1,11 +1,41 @@
 # Binaries
-/sure-cli
+sure-cli
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# Temp
+# Test binary
+*.test
+
+# Output of go coverage
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (user-specific)
+config.yaml
+config.yml
+
+# Build artifacts
+dist/
+bin/
+
+# Temporary files
+tmp/
 *.tmp
-/tmp/
-
-tmp-issue-893.md
-
-# local build artifacts
-/sure-cli
+*.log

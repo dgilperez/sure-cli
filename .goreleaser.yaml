@@ -1,0 +1,71 @@
+# GoReleaser config for sure-cli
+# Run: goreleaser release --clean
+# Or for snapshot: goreleaser release --snapshot --clean
+
+version: 2
+
+project_name: sure-cli
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: sure-cli
+    main: ./main.go
+    binary: sure-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: dgilperez
+    name: sure-cli
+  draft: false
+  prerelease: auto
+
+brews:
+  - name: sure-cli
+    repository:
+      owner: dgilperez
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://github.com/dgilperez/sure-cli
+    description: Agent-first CLI for Sure personal finance
+    license: MIT
+    install: |
+      bin.install "sure-cli"
+    test: |
+      system "#{bin}/sure-cli", "--version"

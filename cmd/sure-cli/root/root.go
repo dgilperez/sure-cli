@@ -13,7 +13,19 @@ var (
 	format  string
 	quiet   bool
 	trace   bool
+
+	// Version info (set by main via SetVersion)
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
 )
+
+// SetVersion sets version info from main (populated by goreleaser ldflags)
+func SetVersion(v, c, d string) {
+	version = v
+	commit = c
+	date = d
+}
 
 func New() *cobra.Command {
 	cmd := &cobra.Command{
@@ -42,6 +54,15 @@ func New() *cobra.Command {
 	cmd.AddCommand(newExportCmd())
 	cmd.AddCommand(newStatusCmd())
 	cmd.AddCommand(newHoldingsCmd())
+	cmd.AddCommand(&cobra.Command{
+		Use:   "version",
+		Short: "Print version information",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("sure-cli %s\n", version)
+			fmt.Printf("  commit: %s\n", commit)
+			fmt.Printf("  built:  %s\n", date)
+		},
+	})
 
 	return cmd
 }
