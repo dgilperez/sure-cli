@@ -1,0 +1,8 @@
+# Binaries
+/sure-cli
+
+# Temp
+*.tmp
+/tmp/
+
+tmp-issue-893.md

@@ -2,6 +2,7 @@ package root
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/dgilperez/sure-cli/internal/api"
 	"github.com/dgilperez/sure-cli/internal/output"
@@ -11,19 +12,34 @@ import (
 func newAccountsCmd() *cobra.Command {
 	cmd := &cobra.Command{Use: "accounts", Short: "Accounts"}
 
-	cmd.AddCommand(&cobra.Command{
+	var page, perPage int
+	list := &cobra.Command{
 		Use:   "list",
 		Short: "List accounts",
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.New()
+			path := "/api/v1/accounts"
+			if page > 0 || perPage > 0 {
+				q := url.Values{}
+				if page > 0 {
+					q.Set("page", fmt.Sprintf("%d", page))
+				}
+				if perPage > 0 {
+					q.Set("per_page", fmt.Sprintf("%d", perPage))
+				}
+				path = path + "?" + q.Encode()
+			}
 			var res any
-			r, err := client.Get("/api/v1/accounts", &res)
+			r, err := client.Get(path, &res)
 			if err != nil {
 				output.Fail("request_failed", err.Error(), nil)
 			}
 			_ = output.PrintJSON(output.Envelope{Data: res, Meta: map[string]any{"status": r.StatusCode()}})
 		},
-	})
+	}
+	list.Flags().IntVar(&page, "page", 1, "page number")
+	list.Flags().IntVar(&perPage, "per-page", 25, "items per page (maps to per_page)")
+	cmd.AddCommand(list)
 
 	cmd.AddCommand(&cobra.Command{
 		Use:   "show <id>",

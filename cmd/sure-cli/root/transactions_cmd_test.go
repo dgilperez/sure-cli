@@ -21,7 +21,7 @@ func TestTransactionsList_QueryString(t *testing.T) {
 
 	// We don't call Run (would hit network), but we can ensure flags exist and are set.
 	// This test mainly guards against accidental flag removal/renaming.
-	for _, name := range []string{"from", "to", "account", "category", "merchant", "limit"} {
+	for _, name := range []string{"from", "to", "account", "category", "merchant", "page", "per-page", "limit"} {
 		if list.Flags().Lookup(name) == nil {
 			t.Fatalf("expected flag %q to exist", name)
 		}

@@ -15,6 +15,7 @@ func newTransactionsCmd() *cobra.Command {
 
 	var from, to string
 	var account, category, merchant string
+	var page, perPage int
 	var limit int
 
 	list := &cobra.Command{
@@ -39,6 +40,12 @@ func newTransactionsCmd() *cobra.Command {
 			if merchant != "" {
 				q.Set("merchant", merchant)
 			}
+			if page > 0 {
+				q.Set("page", fmt.Sprintf("%d", page))
+			}
+			if perPage > 0 {
+				q.Set("per_page", fmt.Sprintf("%d", perPage))
+			}
 			if limit > 0 {
 				q.Set("limit", fmt.Sprintf("%d", limit))
 			}
@@ -62,6 +69,8 @@ func newTransactionsCmd() *cobra.Command {
 	list.Flags().StringVar(&account, "account", "", "account id")
 	list.Flags().StringVar(&category, "category", "", "category id")
 	list.Flags().StringVar(&merchant, "merchant", "", "merchant id")
+	list.Flags().IntVar(&page, "page", 1, "page number")
+	list.Flags().IntVar(&perPage, "per-page", 25, "items per page (maps to per_page)")
 	list.Flags().IntVar(&limit, "limit", 50, "max results")
 	cmd.AddCommand(list)
 
