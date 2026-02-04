@@ -3,6 +3,7 @@ package root
 import (
 	"time"
 
+	"github.com/dgilperez/sure-cli/internal/api"
 	"github.com/dgilperez/sure-cli/internal/insights"
 	"github.com/dgilperez/sure-cli/internal/output"
 	"github.com/spf13/cobra"
@@ -17,7 +18,7 @@ func newInsightsFeesCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			end := time.Now()
 			start := end.AddDate(0, -months, 0)
-			txs, err := fetchTransactionsWindow(start, end)
+			txs, err := api.FetchTransactionsWindow(api.New(), start, end, 100)
 			if err != nil {
 				output.Fail("request_failed", err.Error(), nil)
 			}

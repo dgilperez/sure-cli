@@ -1,14 +1,7 @@
 package insights
 
-import "time"
+import "github.com/dgilperez/sure-cli/internal/models"
 
-type Transaction struct {
-	ID             string
-	Name           string
-	Classification string // income|expense
-	AmountText     string // e.g. "€1.00" or "-€2.00"
-	Currency       string
-	Date           time.Time
-	AccountName    string
-	MerchantName   string
-}
+// Transaction is re-exported for backwards compatibility within the insights package.
+// Prefer using internal/models.Transaction when outside of insights.
+type Transaction = models.Transaction
