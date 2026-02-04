@@ -9,7 +9,7 @@ import (
 
 func TestProposeRules_ConsistentCategory(t *testing.T) {
 	now := time.Now().UTC()
-	
+
 	txs := []models.Transaction{
 		// Same merchant, mostly same category
 		{ID: "1", Name: "Starbucks", Classification: "expense", CategoryName: "Coffee", Date: now.AddDate(0, 0, -1)},
@@ -25,7 +25,7 @@ func TestProposeRules_ConsistentCategory(t *testing.T) {
 	if result.TotalTx != 5 {
 		t.Errorf("expected TotalTx=5, got %d", result.TotalTx)
 	}
-	
+
 	// Should propose a rule for Starbucks
 	found := false
 	for _, p := range result.Proposals {
@@ -46,7 +46,7 @@ func TestProposeRules_ConsistentCategory(t *testing.T) {
 
 func TestProposeRules_NotEnoughOccurrences(t *testing.T) {
 	now := time.Now().UTC()
-	
+
 	txs := []models.Transaction{
 		// Only 1 occurrence - should not propose
 		{ID: "1", Name: "OneTime Shop", Classification: "expense", CategoryName: "Shopping", Date: now},
@@ -63,7 +63,7 @@ func TestProposeRules_NotEnoughOccurrences(t *testing.T) {
 
 func TestProposeRules_InconsistentCategory(t *testing.T) {
 	now := time.Now().UTC()
-	
+
 	txs := []models.Transaction{
 		// Same merchant, mixed categories (not consistent enough)
 		{ID: "1", Name: "Amazon", Classification: "expense", CategoryName: "Shopping", Date: now.AddDate(0, 0, -1)},

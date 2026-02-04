@@ -17,4 +17,5 @@ type Transaction struct {
 	AccountName    string
 	MerchantName   string
 	CategoryName   string
+	CategoryID     string
 }

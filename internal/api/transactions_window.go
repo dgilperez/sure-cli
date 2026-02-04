@@ -55,6 +55,7 @@ func FetchTransactionsWindow(client *Client, start, end time.Time, perPage int) 
 			}
 			if cm, ok := m["category"].(map[string]any); ok {
 				tx.CategoryName = fmt.Sprint(cm["name"])
+				tx.CategoryID = fmt.Sprint(cm["id"])
 			}
 			if mm, ok := m["merchant"].(map[string]any); ok {
 				tx.MerchantName = fmt.Sprint(mm["name"])

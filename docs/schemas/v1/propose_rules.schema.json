@@ -16,7 +16,9 @@
           "value": {"type": "string"},
           "confidence": {"type": "number", "minimum": 0, "maximum": 1},
           "reason": {"type": "string"},
+          "value_id": {"type": "string"},
           "affected_count": {"type": "integer", "minimum": 0},
+          "affected_tx_ids": {"type": "array", "items": {"type": "string"}},
           "sample_tx_ids": {"type": "array", "items": {"type": "string"}},
           "suggested_action": {"type": "string"}
         },

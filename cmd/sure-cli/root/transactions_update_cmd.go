@@ -11,14 +11,15 @@ import (
 )
 
 type txUpdateOpts struct {
-	ID       string
-	Date     string
-	Amount   float64
-	Nature   string
-	Name     string
-	Notes    string
-	Currency string
-	Apply    bool
+	ID         string
+	Date       string
+	Amount     float64
+	Nature     string
+	Name       string
+	Notes      string
+	Currency   string
+	CategoryID string
+	Apply      bool
 }
 
 func newTransactionsUpdateCmd() *cobra.Command {
@@ -65,6 +66,7 @@ func newTransactionsUpdateCmd() *cobra.Command {
 	cmd.Flags().StringVar(&o.Name, "name", "", "name/description")
 	cmd.Flags().StringVar(&o.Notes, "notes", "", "notes")
 	cmd.Flags().StringVar(&o.Currency, "currency", "", "currency")
+	cmd.Flags().StringVar(&o.CategoryID, "category-id", "", "category ID")
 	cmd.Flags().BoolVar(&o.Apply, "apply", false, "execute the update (otherwise dry-run)")
 
 	return cmd
@@ -72,7 +74,7 @@ func newTransactionsUpdateCmd() *cobra.Command {
 
 func buildTxUpdatePayload(o txUpdateOpts) (map[string]any, error) {
 	// require at least one field
-	if o.Date == "" && o.Amount == 0 && o.Name == "" && o.Notes == "" && o.Currency == "" {
+	if o.Date == "" && o.Amount == 0 && o.Name == "" && o.Notes == "" && o.Currency == "" && o.CategoryID == "" {
 		return nil, errors.New("no fields provided to update")
 	}
 	if o.Date != "" {
@@ -108,6 +110,9 @@ func buildTxUpdatePayload(o txUpdateOpts) (map[string]any, error) {
 	}
 	if o.Currency != "" {
 		tx["currency"] = o.Currency
+	}
+	if o.CategoryID != "" {
+		tx["category_id"] = o.CategoryID
 	}
 
 	return map[string]any{"transaction": tx}, nil

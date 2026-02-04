@@ -9,14 +9,16 @@ import (
 )
 
 type RuleProposal struct {
-	Type            string   `json:"type"`    // "category" | "tag" | "merchant"
-	Pattern         string   `json:"pattern"` // merchant name or pattern
-	Action          string   `json:"action"`  // e.g. "set_category", "add_tag"
-	Value           string   `json:"value"`   // category name or tag
+	Type            string   `json:"type"`     // "category" | "tag" | "merchant"
+	Pattern         string   `json:"pattern"`  // merchant name or pattern
+	Action          string   `json:"action"`   // e.g. "set_category", "add_tag"
+	Value           string   `json:"value"`    // category name or tag
+	ValueID         string   `json:"value_id"` // category ID (for applying)
 	Confidence      float64  `json:"confidence"`
 	Reason          string   `json:"reason"`
 	AffectedCount   int      `json:"affected_count"`
-	SampleTxIDs     []string `json:"sample_tx_ids"`
+	AffectedTxIDs   []string `json:"affected_tx_ids"` // all tx IDs to update
+	SampleTxIDs     []string `json:"sample_tx_ids"`   // sample for display
 	SuggestedAction string   `json:"suggested_action"`
 }
 
@@ -51,8 +53,9 @@ func ProposeRules(txs []models.Transaction) ProposeResult {
 			continue // need at least 2 occurrences
 		}
 
-		// Count categories
+		// Count categories and track category IDs
 		catCounts := make(map[string]int)
+		catIDs := make(map[string]string) // category name -> ID
 		var hasCategory bool
 		for _, tx := range txList {
 			cat := tx.CategoryName
@@ -61,6 +64,9 @@ func ProposeRules(txs []models.Transaction) ProposeResult {
 			} else {
 				hasCategory = true
 				catCounts[cat]++
+				if tx.CategoryID != "" {
+					catIDs[cat] = tx.CategoryID
+				}
 			}
 		}
 
@@ -85,19 +91,19 @@ func ProposeRules(txs []models.Transaction) ProposeResult {
 			continue // not consistent enough
 		}
 
-		// Count how many would be affected (currently not matching)
-		affected := 0
+		// Collect all affected transaction IDs (not matching dominant category)
+		var affectedIDs []string
 		var sampleIDs []string
 		for _, tx := range txList {
 			if tx.CategoryName != dominantCat {
-				affected++
+				affectedIDs = append(affectedIDs, tx.ID)
 				if len(sampleIDs) < 3 {
 					sampleIDs = append(sampleIDs, tx.ID)
 				}
 			}
 		}
 
-		if affected == 0 {
+		if len(affectedIDs) == 0 {
 			continue // already consistent
 		}
 
@@ -114,11 +120,13 @@ func ProposeRules(txs []models.Transaction) ProposeResult {
 			Pattern:         name,
 			Action:          "set_category",
 			Value:           dominantCat,
+			ValueID:         catIDs[dominantCat],
 			Confidence:      conf,
 			Reason:          "consistent_categorization",
-			AffectedCount:   affected,
+			AffectedCount:   len(affectedIDs),
+			AffectedTxIDs:   affectedIDs,
 			SampleTxIDs:     sampleIDs,
-			SuggestedAction: fmt.Sprintf("Review and apply: would categorize %d transactions as %s", affected, dominantCat),
+			SuggestedAction: fmt.Sprintf("Review and apply: would categorize %d transactions as %s", len(affectedIDs), dominantCat),
 		})
 	}
 
