@@ -9,7 +9,7 @@ import (
 type Envelope struct {
 	Data  any    `json:"data,omitempty"`
 	Error *Error `json:"error,omitempty"`
-	Meta  any    `json:"meta,omitempty"`
+	Meta  *Meta  `json:"meta,omitempty"`
 }
 
 type Error struct {

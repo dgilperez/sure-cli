@@ -55,7 +55,7 @@ func newTransactionsUpdateCmd() *cobra.Command {
 			if err != nil {
 				output.Fail("request_failed", err.Error(), nil)
 			}
-			_ = output.Print(format, output.Envelope{Data: res, Meta: map[string]any{"status": r.StatusCode()}})
+			_ = output.Print(format, output.Envelope{Data: res, Meta: &output.Meta{Status: r.StatusCode()}})
 		},
 	}
 
