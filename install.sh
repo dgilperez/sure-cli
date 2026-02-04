@@ -6,13 +6,14 @@ set -e
 
 REPO="dgilperez/sure-cli"
 
-# Default install dir: /usr/local/bin on macOS (always in PATH), ~/.local/bin elsewhere
-if [ "$(uname -s)" = "Darwin" ]; then
-  DEFAULT_DIR="/usr/local/bin"
-else
-  DEFAULT_DIR="$HOME/.local/bin"
+# Default install dir with fallback
+if [ -z "$INSTALL_DIR" ]; then
+  if [ -w "/usr/local/bin" ]; then
+    INSTALL_DIR="/usr/local/bin"
+  else
+    INSTALL_DIR="$HOME/.local/bin"
+  fi
 fi
-INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_DIR}"
 
 # Detect OS and arch
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
