@@ -70,12 +70,68 @@ chmod +x "$INSTALL_DIR/sure-cli"
 echo ""
 echo "✓ Installed sure-cli to $INSTALL_DIR/sure-cli"
 
-# Check PATH
+# Detect shell profile and add to PATH if needed
+detect_profile() {
+  if [ -n "$PROFILE" ]; then
+    echo "$PROFILE"
+    return
+  fi
+  
+  local DETECTED=""
+  if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = *"zsh"* ]; then
+    if [ -f "$HOME/.zshrc" ]; then
+      DETECTED="$HOME/.zshrc"
+    fi
+  elif [ -n "$BASH_VERSION" ] || [ "$SHELL" = *"bash"* ]; then
+    if [ -f "$HOME/.bashrc" ]; then
+      DETECTED="$HOME/.bashrc"
+    elif [ -f "$HOME/.bash_profile" ]; then
+      DETECTED="$HOME/.bash_profile"
+    fi
+  fi
+  
+  # Fallback detection
+  if [ -z "$DETECTED" ]; then
+    if [ -f "$HOME/.zshrc" ]; then
+      DETECTED="$HOME/.zshrc"
+    elif [ -f "$HOME/.bashrc" ]; then
+      DETECTED="$HOME/.bashrc"
+    elif [ -f "$HOME/.bash_profile" ]; then
+      DETECTED="$HOME/.bash_profile"
+    elif [ -f "$HOME/.profile" ]; then
+      DETECTED="$HOME/.profile"
+    fi
+  fi
+  
+  echo "$DETECTED"
+}
+
+# Check if PATH modification is needed
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-  echo ""
-  echo "⚠ $INSTALL_DIR is not in your PATH"
-  echo "  Add this to your shell config:"
-  echo "    export PATH=\"\$PATH:$INSTALL_DIR\""
+  SHELL_PROFILE=$(detect_profile)
+  PATH_LINE="export PATH=\"\$PATH:$INSTALL_DIR\""
+  
+  if [ -n "$SHELL_PROFILE" ]; then
+    # Check if already in profile
+    if ! grep -q "$INSTALL_DIR" "$SHELL_PROFILE" 2>/dev/null; then
+      echo "" >> "$SHELL_PROFILE"
+      echo "# Added by sure-cli installer" >> "$SHELL_PROFILE"
+      echo "$PATH_LINE" >> "$SHELL_PROFILE"
+      echo ""
+      echo "✓ Added $INSTALL_DIR to PATH in $SHELL_PROFILE"
+      echo ""
+      echo "Restart your terminal or run:"
+      echo "  source $SHELL_PROFILE"
+    else
+      echo ""
+      echo "PATH already configured in $SHELL_PROFILE"
+    fi
+  else
+    echo ""
+    echo "⚠ Could not detect shell profile"
+    echo "  Add this to your shell config manually:"
+    echo "    $PATH_LINE"
+  fi
 fi
 
 echo ""
