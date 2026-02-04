@@ -73,6 +73,17 @@ sure-cli plan forecast --days 30 [--daily]
 
 # Propose automations
 sure-cli propose rules --months 3
+sure-cli propose rules --months 3 --apply --min-confidence 0.8
+
+# Export
+sure-cli export transactions --months 12 --format csv --out transactions.csv
+
+# Status (financial snapshot)
+sure-cli status
+
+# Holdings (requires Sure investment API)
+sure-cli holdings list
+sure-cli holdings performance --period 1m
 
 # Sync
 sure-cli sync
