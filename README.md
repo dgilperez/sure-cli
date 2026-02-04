@@ -96,8 +96,8 @@ Required device payload fields are stored under `auth.device.*` in config (defau
 - **Transaction sign mismatch**: UI shows income `+2.00€` and expense `-1.00€`, but API payload returned inverted signs (income as `-€2.00`, expense as `€1.00`). Needs investigation in Sure serializer/formatting.
 
 ### CLI features (next)
-- Add `login` (OAuth) and token refresh flow (device info required by Sure auth).
-- Hardening/refactor: move more pagination/window logic into `internal/api` (typed models, better errors).
+- Improve OAuth UX (interactive prompts, safer password input, optional signup flow).
+- Hardening/refactor: reduce map[string]any parsing; expand typed models; improve error surfaces.
 
 ### Intelligent commands (Phase 4)
 - Improve `insights subscriptions/fees/leaks` output richness (confidence, reasons, suggested actions).
