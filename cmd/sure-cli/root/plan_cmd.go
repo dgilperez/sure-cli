@@ -43,7 +43,7 @@ func newPlanBudgetCmd() *cobra.Command {
 			if err != nil {
 				output.Fail("compute_failed", err.Error(), nil)
 			}
-			_ = output.Print(format, output.Envelope{Data: res, Meta: &output.Meta{Status: 200}})
+			_ = output.Print(format, output.Envelope{Data: res, Meta: &output.Meta{Schema: "docs/schemas/v1/plan_budget.schema.json", Status: 200}})
 		},
 	}
 	cmd.Flags().StringVar(&monthStr, "month", "", "month YYYY-MM")
@@ -97,7 +97,7 @@ func newPlanRunwayCmd() *cobra.Command {
 			if err != nil {
 				output.Fail("compute_failed", err.Error(), nil)
 			}
-			_ = output.Print(format, output.Envelope{Data: out, Meta: &output.Meta{Status: 200}})
+			_ = output.Print(format, output.Envelope{Data: out, Meta: &output.Meta{Schema: "docs/schemas/v1/plan_runway.schema.json", Status: 200}})
 		},
 	}
 	cmd.Flags().StringVar(&accountID, "account-id", "", "cash account id")

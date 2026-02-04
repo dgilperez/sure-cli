@@ -16,7 +16,23 @@
     },
     "candidates": {
       "type": "array",
-      "items": {"type": "object"}
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "count": {"type": "integer"},
+          "avg_amount": {"type": "number"},
+          "avg_period_days": {"type": "number"},
+          "stddev_days": {"type": "number"},
+          "last_date": {"type": "string"},
+          "sample_tx_ids": {"type": "array", "items": {"type": "string"}},
+          "classification": {"type": "string"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "reason": {"type": "string"},
+          "suggested_action": {"type": "string"}
+        },
+        "required": ["name", "count", "avg_amount", "confidence"]
+      }
     }
   },
   "required": ["window", "candidates"]

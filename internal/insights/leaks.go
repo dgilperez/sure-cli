@@ -6,14 +6,15 @@ import (
 )
 
 type LeakCandidate struct {
-	Name        string   `json:"name"`
-	Count       int      `json:"count"`
-	TotalAmount float64  `json:"total_amount"` // positive
-	AvgAmount   float64  `json:"avg_amount"`
-	SpikeAmount float64  `json:"spike_amount"`
-	SampleTxIDs []string `json:"sample_tx_ids"`
-	Confidence  float64  `json:"confidence"`
-	Reason      string   `json:"reason"`
+	Name            string   `json:"name"`
+	Count           int      `json:"count"`
+	TotalAmount     float64  `json:"total_amount"` // positive
+	AvgAmount       float64  `json:"avg_amount"`
+	SpikeAmount     float64  `json:"spike_amount"`
+	SampleTxIDs     []string `json:"sample_tx_ids"`
+	Confidence      float64  `json:"confidence"`
+	Reason          string   `json:"reason"`
+	SuggestedAction string   `json:"suggested_action"`
 }
 
 // DetectLeaks finds “money leakage” patterns: small recurring-ish expenses that add up,
@@ -86,15 +87,23 @@ func DetectLeaks(txs []Transaction, minCount int, minTotal float64, maxAvg float
 			conf = 1
 		}
 
+		action := "Track and set a budget"
+		if total > 100 {
+			action = "Significant leak; consider reducing frequency or finding alternatives"
+		} else if len(list) >= 10 {
+			action = "Very frequent small expense; batch or eliminate some occurrences"
+		}
+
 		out = append(out, LeakCandidate{
-			Name:        name,
-			Count:       len(list),
-			TotalAmount: round2(total),
-			AvgAmount:   round2(avg),
-			SpikeAmount: round2(spike),
-			SampleTxIDs: ids,
-			Confidence:  conf,
-			Reason:      "small_frequent_expenses",
+			Name:            name,
+			Count:           len(list),
+			TotalAmount:     round2(total),
+			AvgAmount:       round2(avg),
+			SpikeAmount:     round2(spike),
+			SampleTxIDs:     ids,
+			Confidence:      conf,
+			Reason:          "small_frequent_expenses",
+			SuggestedAction: action,
 		})
 	}
 

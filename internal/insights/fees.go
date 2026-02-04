@@ -7,13 +7,14 @@ import (
 )
 
 type FeeCandidate struct {
-	Name        string   `json:"name"`
-	Count       int      `json:"count"`
-	TotalAmount float64  `json:"total_amount"` // positive number (absolute)
-	AvgAmount   float64  `json:"avg_amount"`
-	SampleTxIDs []string `json:"sample_tx_ids"`
-	Confidence  float64  `json:"confidence"`
-	Reason      string   `json:"reason"`
+	Name            string   `json:"name"`
+	Count           int      `json:"count"`
+	TotalAmount     float64  `json:"total_amount"` // positive number (absolute)
+	AvgAmount       float64  `json:"avg_amount"`
+	SampleTxIDs     []string `json:"sample_tx_ids"`
+	Confidence      float64  `json:"confidence"`
+	Reason          string   `json:"reason"`
+	SuggestedAction string   `json:"suggested_action"`
 }
 
 var defaultFeeKeywords = []string{
@@ -67,14 +68,22 @@ func DetectFees(txs []Transaction, keywords []string) []FeeCandidate {
 		if conf > 1 {
 			conf = 1
 		}
+		action := "Check if avoidable"
+		if total > 50 {
+			action = "Contact bank to waive or reduce; consider switching accounts"
+		} else if avg < 5 && len(list) >= 3 {
+			action = "Small recurring fee; check if bundled in account package"
+		}
+
 		out = append(out, FeeCandidate{
-			Name:        name,
-			Count:       len(list),
-			TotalAmount: round2(total),
-			AvgAmount:   round2(avg),
-			SampleTxIDs: ids,
-			Confidence:  conf,
-			Reason:      "keyword_match",
+			Name:            name,
+			Count:           len(list),
+			TotalAmount:     round2(total),
+			AvgAmount:       round2(avg),
+			SampleTxIDs:     ids,
+			Confidence:      conf,
+			Reason:          "keyword_match",
+			SuggestedAction: action,
 		})
 	}
 

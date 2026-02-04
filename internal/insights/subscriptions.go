@@ -1,21 +1,24 @@
 package insights
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"time"
 )
 
 type SubscriptionCandidate struct {
-	Name           string    `json:"name"`
-	Count          int       `json:"count"`
-	AvgAmount      float64   `json:"avg_amount"`
-	AvgPeriodDays  float64   `json:"avg_period_days"`
-	StdDevDays     float64   `json:"stddev_days"`
-	LastDate       time.Time `json:"last_date"`
-	SampleTxIDs    []string  `json:"sample_tx_ids"`
-	Classification string    `json:"classification"` // usually expense
-	Confidence     float64   `json:"confidence"`
+	Name            string    `json:"name"`
+	Count           int       `json:"count"`
+	AvgAmount       float64   `json:"avg_amount"`
+	AvgPeriodDays   float64   `json:"avg_period_days"`
+	StdDevDays      float64   `json:"stddev_days"`
+	LastDate        time.Time `json:"last_date"`
+	SampleTxIDs     []string  `json:"sample_tx_ids"`
+	Classification  string    `json:"classification"` // usually expense
+	Confidence      float64   `json:"confidence"`
+	Reason          string    `json:"reason"`
+	SuggestedAction string    `json:"suggested_action"`
 }
 
 // DetectSubscriptions finds recurring transactions by same name with roughly regular spacing and stable amounts.
@@ -86,16 +89,30 @@ func DetectSubscriptions(txs []Transaction) []SubscriptionCandidate {
 			conf = 1.0
 		}
 
+		reason := "recurring_expense"
+		if monthly {
+			reason = "monthly_recurring"
+		} else if weekly {
+			reason = "weekly_recurring"
+		}
+
+		action := "Review if still needed"
+		if avgAmt > 20 {
+			action = "Review if still needed; consider canceling to save ~" + formatAmount(avgAmt*12) + "/year"
+		}
+
 		out = append(out, SubscriptionCandidate{
-			Name:           name,
-			Count:          len(list),
-			AvgAmount:      round2(avgAmt),
-			AvgPeriodDays:  round2(avg),
-			StdDevDays:     round2(std),
-			LastDate:       list[len(list)-1].Date,
-			SampleTxIDs:    ids,
-			Classification: "expense",
-			Confidence:     conf,
+			Name:            name,
+			Count:           len(list),
+			AvgAmount:       round2(avgAmt),
+			AvgPeriodDays:   round2(avg),
+			StdDevDays:      round2(std),
+			LastDate:        list[len(list)-1].Date,
+			SampleTxIDs:     ids,
+			Classification:  "expense",
+			Confidence:      conf,
+			Reason:          reason,
+			SuggestedAction: action,
 		})
 	}
 
@@ -135,4 +152,8 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func formatAmount(v float64) string {
+	return fmt.Sprintf("€%.0f", v)
 }

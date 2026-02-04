@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dgilperez/sure-cli/docs/schemas/v1/plan_runway.schema.json",
+  "title": "sure-cli plan runway v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "balance": {"type": "number"},
+    "avg_monthly_burn": {"type": "number", "minimum": 0},
+    "runway_months": {"type": "number", "minimum": 0},
+    "currency": {"type": "string"},
+    "window_days": {"type": "integer", "minimum": 1},
+    "assumptions": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["balance", "avg_monthly_burn", "runway_months", "currency", "window_days"]
+}

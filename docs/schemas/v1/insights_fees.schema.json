@@ -16,7 +16,20 @@
     },
     "candidates": {
       "type": "array",
-      "items": {"type": "object"}
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "count": {"type": "integer"},
+          "total_amount": {"type": "number"},
+          "avg_amount": {"type": "number"},
+          "sample_tx_ids": {"type": "array", "items": {"type": "string"}},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "reason": {"type": "string"},
+          "suggested_action": {"type": "string"}
+        },
+        "required": ["name", "count", "total_amount", "confidence"]
+      }
     }
   },
   "required": ["window", "candidates"]
