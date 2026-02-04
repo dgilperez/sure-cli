@@ -47,6 +47,23 @@ go install github.com/dgilperez/sure-cli@latest
 
 [GitHub Releases](https://github.com/dgilperez/sure-cli/releases)
 
+## Upgrade
+
+**Homebrew**
+```bash
+brew update && brew upgrade sure-cli
+```
+
+**One-liner** (re-run installer)
+```bash
+curl -sSL https://raw.githubusercontent.com/dgilperez/sure-cli/main/install.sh | bash
+```
+
+**Go install**
+```bash
+go install github.com/dgilperez/sure-cli@latest
+```
+
 ## Usage
 
 ```bash
