@@ -39,6 +39,7 @@ func New() *cobra.Command {
 	cmd.AddCommand(newInsightsCmd())
 	cmd.AddCommand(newPlanCmd())
 	cmd.AddCommand(newProposeCmd())
+	cmd.AddCommand(newExportCmd())
 
 	return cmd
 }
