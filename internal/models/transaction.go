@@ -16,4 +16,5 @@ type Transaction struct {
 	Date           time.Time
 	AccountName    string
 	MerchantName   string
+	CategoryName   string
 }

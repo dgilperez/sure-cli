@@ -38,6 +38,7 @@ func New() *cobra.Command {
 	cmd.AddCommand(newSyncCmd())
 	cmd.AddCommand(newInsightsCmd())
 	cmd.AddCommand(newPlanCmd())
+	cmd.AddCommand(newProposeCmd())
 
 	return cmd
 }

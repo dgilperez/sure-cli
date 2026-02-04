@@ -66,9 +66,13 @@ sure-cli insights subscriptions --days 120
 sure-cli insights fees --days 120
 sure-cli insights leaks --days 120
 
-# Plan (client-side budget/runway)
+# Plan (client-side budget/runway/forecast)
 sure-cli plan budget --month 2026-02
 sure-cli plan runway --account-id <id> --days 90
+sure-cli plan forecast --days 30 [--daily]
+
+# Propose automations
+sure-cli propose rules --months 3
 
 # Sync
 sure-cli sync

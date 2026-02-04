@@ -14,6 +14,39 @@ func newPlanCmd() *cobra.Command {
 	cmd := &cobra.Command{Use: "plan", Short: "Planning commands (budget/runway/forecast)"}
 	cmd.AddCommand(newPlanBudgetCmd())
 	cmd.AddCommand(newPlanRunwayCmd())
+	cmd.AddCommand(newPlanForecastCmd())
+	return cmd
+}
+
+func newPlanForecastCmd() *cobra.Command {
+	var days int
+	var includeDaily bool
+	var months int
+
+	cmd := &cobra.Command{
+		Use:   "forecast",
+		Short: "Forecast spending for the next N days",
+		Run: func(cmd *cobra.Command, args []string) {
+			client := api.New()
+
+			// Fetch historical data (use months for lookback)
+			if months <= 0 {
+				months = 6
+			}
+			end := time.Now().UTC()
+			start := end.AddDate(0, -months, 0)
+			txs, err := api.FetchTransactionsWindow(client, start, end, 500)
+			if err != nil {
+				output.Fail("request_failed", err.Error(), nil)
+			}
+
+			result := plan.ComputeForecast(txs, days, includeDaily)
+			_ = output.Print(format, output.Envelope{Data: result, Meta: &output.Meta{Schema: "docs/schemas/v1/plan_forecast.schema.json", Status: 200}})
+		},
+	}
+	cmd.Flags().IntVar(&days, "days", 30, "forecast period in days")
+	cmd.Flags().IntVar(&months, "months", 6, "historical lookback months")
+	cmd.Flags().BoolVar(&includeDaily, "daily", false, "include daily breakdown")
 	return cmd
 }
 

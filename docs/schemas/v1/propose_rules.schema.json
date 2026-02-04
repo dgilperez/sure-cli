@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dgilperez/sure-cli/docs/schemas/v1/propose_rules.schema.json",
+  "title": "sure-cli propose rules v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "pattern": {"type": "string"},
+          "action": {"type": "string"},
+          "value": {"type": "string"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "reason": {"type": "string"},
+          "affected_count": {"type": "integer", "minimum": 0},
+          "sample_tx_ids": {"type": "array", "items": {"type": "string"}},
+          "suggested_action": {"type": "string"}
+        },
+        "required": ["type", "pattern", "action", "value", "confidence"]
+      }
+    },
+    "total_transactions": {"type": "integer", "minimum": 0},
+    "uncategorized_count": {"type": "integer", "minimum": 0}
+  },
+  "required": ["proposals", "total_transactions"]
+}
