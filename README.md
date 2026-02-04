@@ -1,4 +1,13 @@
-# sure-cli
+```
+   _____ _   _ ____  _____       ____ _     ___ 
+  / ____| | | |  _ \|  __ \     / __ \ |   |_ _|
+ | (___ | | | | |_) | |__) |   | |  | | |    | | 
+  \___ \| | | |  _ <|  _  /    | |  | | |    | | 
+  ____) | |_| | |_) | | \ \    | |__| | |___ | | 
+ |_____/ \___/|____/|_|  \_\    \____/|_____|___|
+
+ sure-cli — Agent-first CLI for Sure
+```
 
 Agent-first CLI for **Sure** (we-promise/sure) — self-hosted personal finance app.
 
