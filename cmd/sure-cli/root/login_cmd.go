@@ -1,23 +1,45 @@
 package root
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/dgilperez/sure-cli/internal/api"
 	"github.com/dgilperez/sure-cli/internal/config"
 	"github.com/dgilperez/sure-cli/internal/output"
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 func newLoginCmd() *cobra.Command {
 	var email string
-	var password string
 	var otp string
 
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Login via OAuth (email/password) and store access + refresh tokens",
 		Run: func(cmd *cobra.Command, args []string) {
+			// Prompt for email if not provided
+			if email == "" {
+				fmt.Print("Email: ")
+				reader := bufio.NewReader(os.Stdin)
+				input, _ := reader.ReadString('\n')
+				email = strings.TrimSpace(input)
+			}
+
+			// Always prompt for password (hidden input)
+			fmt.Print("Password: ")
+			passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
+			fmt.Println() // newline after hidden input
+			if err != nil {
+				output.Fail("password_read_failed", err.Error(), nil)
+			}
+			password := string(passwordBytes)
+
 			client := api.New()
 
 			res, err := client.Login(api.LoginRequest{
@@ -47,10 +69,7 @@ func newLoginCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&email, "email", "", "user email")
-	cmd.Flags().StringVar(&password, "password", "", "user password")
+	cmd.Flags().StringVar(&email, "email", "", "user email (prompted if not provided)")
 	cmd.Flags().StringVar(&otp, "otp", "", "OTP code (if 2FA enabled)")
-	_ = cmd.MarkFlagRequired("email")
-	_ = cmd.MarkFlagRequired("password")
 	return cmd
 }

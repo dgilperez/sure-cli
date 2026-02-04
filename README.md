@@ -114,7 +114,12 @@ Sure supports OAuth bearer tokens and API keys.
 ## OAuth login + refresh
 
 ```bash
-sure-cli login --email you@example.com --password "..." [--otp 123456]
+sure-cli login --email you@example.com [--otp 123456]
+# Password is prompted securely (hidden input)
+
+# Or fully interactive:
+sure-cli login
+# Prompts for email and password
 
 # Later (refresh access token using stored refresh token)
 sure-cli refresh
